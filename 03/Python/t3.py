@@ -5,16 +5,8 @@ import re
 
 grid={}
 
-def process_step(posx,posy) :
-                if (posx,posy) not in seen:
-                    if (posx,posy) not in grid:
-                        grid[(posx,posy)] = 1
-                    else:
-                        grid[(posx,posy)] += 1
-                        distance = abs(posx) + abs(posy)
-                        print("intersection "+str(posx)+" "+str(posy)+" distance "+str(distance))
-
-                seen[(posx,posy)]=1
+dX = {'R':1,'L':-1,'U':0,'D':0}
+dY = {'R':0,'L':0,'U':1,'D':-1}
 
 file = open("../input","r")
 
@@ -25,29 +17,19 @@ for line in file:
         seen={}
         
         for item in arr:
-            match=re.match(r"(.)(.*)", item)
-            direction=match.group(1)
-            count=match.group(2)
+            direction,count = item[0],int(item[1:])
    
-            if (direction == 'R') :
-                for i in range(1,int(count)+1):
-                    posx += 1
-                    process_step(posx,posy)
-            
-            if (direction == 'L') :
-                for i in range(1,int(count)+1):
-                    posx -= 1
-                    process_step(posx,posy)
- 
-            if (direction == 'U') :
-                for i in range(1,int(count)+1):
-                    posy += 1
-                    process_step(posx,posy)
+            for i in range(count):
+                posx += dX[direction]
+                posy += dY[direction]
+                
+                if (posx,posy) not in seen:
+                    if (posx,posy) not in grid:
+                        grid[(posx,posy)] = 1
+                    else:
+                        grid[(posx,posy)] += 1
+                        distance = abs(posx) + abs(posy)
+                        print("intersection "+str(posx)+" "+str(posy)+" distance "+str(distance))
 
-
-            if (direction == 'D') :
-                for i in range(1,int(count)+1):
-                    posy -= 1
-                    process_step(posx,posy)
-
+                seen[(posx,posy)]=1
 
