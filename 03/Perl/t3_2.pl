@@ -30,8 +30,12 @@ my %steps;
 my $steps_count;
 my $i;
 my $min_count;
+my %seen;
 
-sub check_intersection {
+sub process_step {
+
+                $grid{$posx}{$posy}++ unless $seen{$posx}{$posy};
+                $seen{$posx}{$posy}=1;
                 $steps_count++;
                 unless ($steps{$i}{$posx}{$posy}) {
                     $steps{$i}{$posx}{$posy} = $steps_count;
@@ -56,7 +60,7 @@ while (<$file>) {
     $posx=0;
     $posy=0;
     $steps_count = 0;
-    my %seen;
+    %seen = ();
 
     chomp;
 
@@ -68,36 +72,28 @@ while (<$file>) {
         if ($direction eq 'R') {
             for (1..$count) {
                 $posx++;
-                $grid{$posx}{$posy}++ unless $seen{$posx}{$posy};
-                $seen{$posx}{$posy}=1;
-                &check_intersection;
+                &process_step;
             }
         }
 
         if ($direction eq 'L') {
             for (1..$count) {
                 $posx--;
-                $grid{$posx}{$posy}++ unless $seen{$posx}{$posy};
-                $seen{$posx}{$posy}=1;
-                &check_intersection;
+                &process_step;
             }
         }
 
         if ($direction eq 'U') {
             for (1..$count) {
                 $posy++;
-                $grid{$posx}{$posy}++ unless $seen{$posx}{$posy};
-                $seen{$posx}{$posy}=1;
-                &check_intersection;
+                &process_step;
             }
         }
 
         if ($direction eq 'D') {
             for (1..$count) {
                 $posy--;
-                $grid{$posx}{$posy}++ unless $seen{$posx}{$posy};
-                $seen{$posx}{$posy}=1;
-                &check_intersection;
+                &process_step;
             }
         }
 
