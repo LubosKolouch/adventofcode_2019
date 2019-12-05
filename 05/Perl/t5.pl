@@ -78,16 +78,7 @@ while ( $data[$pos] != 99 ) {
 
         for my $p ( 1 .. $params{ $what[0] } -1 ) {
             #say "processing param $p";
-
-            if ($what[0] != 3) {
-                #say "position mode, data ".$data[ $data[ $pos + $p] ];
                 $what[$p] = $data[ $data[ $pos + $p] ];
-            } else {
-                #say "immediate mode";
-                $what[$p] = $data[ $pos + $p ];
-            }
-
-
         }
         #storing location
 
