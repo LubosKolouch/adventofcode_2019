@@ -143,8 +143,6 @@ while ( $data[$pos] != 99 ) {
     }
     elsif ( $what[0] == 4 ) {
             say $what[1];
-
-        die;
     }
     elsif ( $what[0] == 5 ) {
         #say "Processing instruction 5";
