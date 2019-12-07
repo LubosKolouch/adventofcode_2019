@@ -19,9 +19,10 @@ use Math::Combinatorics;
 use Data::Dumper;
 
 my %amplifier;
+my %program_param;
 
 sub run_intcode {
-    my $cur_amp = shift;
+my $cur_amp = shift;
 
 # opcodes
 #
@@ -70,16 +71,9 @@ sub run_intcode {
 
     while (1) {
 
-        #say "pos $pos";
-        #warn "pos $pos";
-        #say "instruction " . $data[$pos];
-        #warn "instruction " . $data[$pos];
         my @instr = split //, $data[$pos];
 
-        #say Dumper \@instr;
-
         my @what;
-
         my $mode;
 
         # load the instruction and parameters
@@ -92,61 +86,39 @@ sub run_intcode {
 
         $what[0] = 10 * $prev + $last;
 
-        #say "prev $prev last $last => instruction $what[0]";
         die unless defined $params{ $what[0] };
 
         for my $p ( 1 .. $params{ $what[0] } ) {
 
-            #say "parameter $p in data $data[$pos+$p] or $data[$data[$pos+$p]]";
             $mode = pop @instr // 0;
 
             if ( ( $mode == 1 ) or ( $data[$pos] == 3 ) ) {
-
-                #say "immediate mode, data " . $data[ $pos + $p ]." to what ".$p ;
                 $what[$p] = $data[ $pos + $p ];
                 next;
             }
 
             if ( ( $p == $params{ $what[0] } ) and ( $writing_instr{ $what[0] } ) ) {
-
-                #say "immediate mode, data " . $data[ $pos + $p ]." to what ".$p ;
                 $what[$p] = $data[ $pos + $p ];
             }
             else {
-                #say "position mode, data : ".$data[ $data[$pos+$p]]." to what $p";
                 $what[$p] = $data[ $data[ $pos + $p ] ];
             }
 
         }
 
-        # Parameters that an instruction writes to will never be in immediate mode.
-        #    $what[$params{$what[0]}] = $data[$pos + $params{$what[0]}];
-
-        #say "final what";
-        #say Dumper \@what;
-
-        ##say "data[pos] $data[$pos]";
-
         if ( $what[0] == 1 ) {
-
-            #say "Writing sum of $what[1] and $what[2] to $what[3]";
             $data[ $what[3] ] = $what[1] + $what[2];
         }
         elsif ( $what[0] == 2 ) {
             $data[ $what[3] ] = $what[1] * $what[2];
         }
         elsif ( $what[0] == 3 ) {
-
-            #say "Writing $input to position $what[1]";
             if ($amplifier{$cur_amp}{'phase_set'}) {
                 $data[ $what[1] ] = $amplifier{$cur_amp}{'input'}
             } else {
                 $amplifier{$cur_amp}{'phase_set'} = 1;
                 $data[ $what[1] ] = $amplifier{$cur_amp}{'phase'}
             }
-
-
-            #say "data[9]: ".$data[9];
         }
         elsif ( $what[0] == 4 ) {
             $amplifier{$cur_amp}{'program'} = join ',', @data;
@@ -158,50 +130,37 @@ sub run_intcode {
             return $what[1];
         }
         elsif ( $what[0] == 5 ) {
-
-            #say "Processing instruction 5";
             if ( $what[1] ) {
                 $pos = $what[2];
-
-                #say "Jumping to $pos";
                 next;
             }
         }
         elsif ( $what[0] == 6 ) {
             if ( $what[1] == 0 ) {
                 $pos = $what[2];
-
-                #say "Jumping to $pos";
                 next;
             }
         }
         elsif ( $what[0] == 7 ) {
             if ( $what[1] < $what[2] ) {
-
-                #say "Storing 1 to $what[3]";
                 $data[ $what[3] ] = 1;
 
             }
             else {
-                #say "Storing 0 to $what[3]";
                 $data[ $what[3] ] = 0;
             }
         }
         elsif ( $what[0] == 8 ) {
 
-            #say "Instruction 8";
             if ( $what[1] == $what[2] ) {
-
-                #say "Values are equal";
                 $data[ $what[3] ] = 1;
             }
             else {
-                #say "Values are not equal";
                 $data[ $what[3] ] = 0;
             }
         }
         elsif ( $what[0] == 99 ) {
-            $amplifier{$cur_amp}{'program_end'} = 1;
+            $program_param{'program_end'} = 1;
             return "END";
 
         }
@@ -211,8 +170,6 @@ sub run_intcode {
 
         my $shift = $params{ $what[0] } + 1;
         $pos += $shift;
-
-        #say "Shifting $shift positions to $pos";
 
     }
 }
@@ -226,15 +183,23 @@ open my $file, '<', 'input' or die 'file cannot be opened';
 my $program = <$file>;
 chomp $program;
 
-my @list = qw/5 6 7 8 9/;
+$program_param{'mode'} = 'feedback';
+$program_param{'program_end'} = 0;
+
+#my @list = qw/5 6 7 8 9/;
+my @list = (0..4) if $program_param{'mode'} eq 'normal';
+@list = (5..9) if $program_param{'mode'} eq 'feedback';
 
 my $combinat = Math::Combinatorics->new(
     count => 5,
     data  => [@list],
 );
 
+my $mode = 'normal';
+
 my $max = 0;
 while ( my @combo = $combinat->next_permutation ) {
+    $program_param{'program_end'} = 0;
     my @amp = qw/A B C D E/;
 
     # initialize the amplifiers
@@ -249,7 +214,6 @@ while ( my @combo = $combinat->next_permutation ) {
         $amplifier{$cur_amp}{'input'}    = 0;
         $amplifier{$cur_amp}{'output'}   = 0;
         $amplifier{$cur_amp}{'phase_set'}   = 0;
-        $amplifier{$cur_amp}{'program_end'}   = 0;
     }
 
     my $end = 0;
@@ -261,22 +225,22 @@ while ( my @combo = $combinat->next_permutation ) {
             my $cur_amp = $amp[$amps];
             my $next_amp = $amp[($amps +1) % scalar @amp];
 
-            #say "current amp $cur_amp next amp $next_amp";
             $amplifier{$next_amp}{'input'} = run_intcode( $cur_amp );
-
-            if ($amplifier{$cur_amp}{'program_end'}) {
-                #say "Program end reached";
-                $end = 1;
-                last;
-            }
-            #say "amp $cur_amp output ".$amplifier{$next_amp}{'input'};
 
             if (($cur_amp eq 'E') and ($amplifier{$next_amp}{'input'} > $max)) {
                 $max = $amplifier{$next_amp}{'input'};
-                say "New max found, max $max";
             }
+
+            if ($program_param{'program_end'}) {
+                $end = 1;
+                last;
+            }
+            #        say "amp $cur_amp output ".$amplifier{$next_amp}{'input'};
         }
 
+        $end = 1 if $program_param{'mode'} eq 'normal';
     }
 
 }
+
+say $max;
