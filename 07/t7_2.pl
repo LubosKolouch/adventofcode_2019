@@ -195,8 +195,6 @@ my $combinat = Math::Combinatorics->new(
     data  => [@list],
 );
 
-my $mode = 'normal';
-
 my $max = 0;
 while ( my @combo = $combinat->next_permutation ) {
     $program_param{'program_end'} = 0;
