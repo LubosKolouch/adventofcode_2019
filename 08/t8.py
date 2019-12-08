@@ -11,9 +11,11 @@ with open('input', 'r') as data:
     data = np.array(list(data.read().strip())).reshape((-1, 6, 25))
 
 # get the minimal layer for sum of zeros
+# python always interates along axis 0
 zeros_layer = min(data, key=lambda func:np.sum(func == '0'))
 
 # it's not summing the numbers itself, but number of times the condition is true
+# it build boolean array and then sums the Trues
 print(np.sum(zeros_layer == '1') * np.sum(zeros_layer == '2'))
 
 # initial result is the first layout
