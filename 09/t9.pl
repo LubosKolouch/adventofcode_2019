@@ -67,12 +67,12 @@ sub run_intcode {
     while (1) {
 
 
-        my $inst = $processor{$cur_proc}{'program'}{$pos};
+        my $instr = $processor{$cur_proc}{'program'}{$pos};
 
-        my $op = $inst % 100;
-        my $mode1 = int( $inst / 100 ) % 10;
-        my $mode2 = int( $inst / 1000 ) % 10;
-        my $mode3 = int( $inst / 10000 ) % 10;
+        my $op = $instr % 100;
+        my $mode1 = int( $instr / 100 ) % 10;
+        my $mode2 = int( $instr / 1000 ) % 10;
+        my $mode3 = int( $instr / 10000 ) % 10;
 
         my $reg1 = $processor{$cur_proc}{'program'}{$pos+1} // 0;
         my $reg2 = $processor{$cur_proc}{'program'}{$pos+2} // 0;
