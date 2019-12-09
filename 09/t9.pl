@@ -81,13 +81,9 @@ sub run_intcode {
         my $m2 = int( $inst / 1000 ) % 10;
         my $m3 = int( $inst / 10000 ) % 10;
 
-        my $reg1 = $processor{$cur_proc}{'program'}{$pos+1};
-        my $reg2 = $processor{$cur_proc}{'program'}{$pos+2};
-        my $reg3 =  $processor{$cur_proc}{'program'}{$pos+3};
-
-        $reg1 //= 0;
-        $reg2 //= 0;
-        $reg3 //= 0;
+        my $reg1 = $processor{$cur_proc}{'program'}{$pos+1} // 0;
+        my $reg2 = $processor{$cur_proc}{'program'}{$pos+2} // 0;
+        my $reg3 =  $processor{$cur_proc}{'program'}{$pos+3} // 0;
 
         my $v1 = $reg1;
         $v1 = $processor{$cur_proc}{'program'}{$reg1}            if $m1 == 0;
@@ -102,7 +98,7 @@ sub run_intcode {
 
         die unless defined $params{$op};
 
-        #$v1 = 0 unless defined $v1;
+        $v1 = 0 unless defined $v1;
         #$v2 = 0 unless defined $v2;
 
         #        say "pos $pos m1 $m1 m2 $m2 m3 $m3  op $op v1 $v1 v2 $v2 v3 $v3";
