@@ -51,13 +51,6 @@ sub run_intcode {
         99 => 0,
     );
 
-    my %writing_instr = (
-        1 => 1,
-        2 => 1,
-        7 => 1,
-        8 => 1,
-    );
-
     # positions : 0 = position mode, 1 = immediate mode
     # ABCDE
     # 1002
