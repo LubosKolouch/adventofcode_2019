@@ -77,31 +77,31 @@ sub run_intcode {
         my $inst = $processor{$cur_proc}{'program'}{$pos};
 
         my $op = $inst % 100;
-        my $m1 = int( $inst / 100 ) % 10;
-        my $m2 = int( $inst / 1000 ) % 10;
-        my $m3 = int( $inst / 10000 ) % 10;
+        my $mode1 = int( $inst / 100 ) % 10;
+        my $mode2 = int( $inst / 1000 ) % 10;
+        my $mode3 = int( $inst / 10000 ) % 10;
 
         my $reg1 = $processor{$cur_proc}{'program'}{$pos+1} // 0;
         my $reg2 = $processor{$cur_proc}{'program'}{$pos+2} // 0;
         my $reg3 =  $processor{$cur_proc}{'program'}{$pos+3} // 0;
 
         my $v1 = $reg1;
-        $v1 = $processor{$cur_proc}{'program'}{$reg1}            if $m1 == 0;
-        $v1 = $processor{$cur_proc}{'program'}{ $reg1 + $processor{$cur_proc}{'relative_base'} } if $m1 == 2;
+        $v1 = $processor{$cur_proc}{'program'}{$reg1}            if $mode1 == 0;
+        $v1 = $processor{$cur_proc}{'program'}{ $reg1 + $processor{$cur_proc}{'relative_base'} } if $mode1 == 2;
 
         my $v2 = $reg2;
-        $v2 = $processor{$cur_proc}{'program'}{$reg2}            if $m2 == 0;
-        $v2 = $processor{$cur_proc}{'program'}{ $reg2 + $processor{$cur_proc}{'relative_base'} } if $m2 == 2;
+        $v2 = $processor{$cur_proc}{'program'}{$reg2}            if $mode2 == 0;
+        $v2 = $processor{$cur_proc}{'program'}{ $reg2 + $processor{$cur_proc}{'relative_base'} } if $mode2 == 2;
 
         my $v3 = $reg3;
-        $v3 += $processor{$cur_proc}{'relative_base'} if $m3 == 2;
+        $v3 += $processor{$cur_proc}{'relative_base'} if $mode3 == 2;
 
         die unless defined $params{$op};
 
         $v1 = 0 unless defined $v1;
         #$v2 = 0 unless defined $v2;
 
-        #        say "pos $pos m1 $m1 m2 $m2 m3 $m3  op $op v1 $v1 v2 $v2 v3 $v3";
+        #        say "pos $pos mode1 $mode1 mode2 $mode2 mode3 $mode3  op $op v1 $v1 v2 $v2 v3 $v3";
 
         if ( $op == 1 ) {
             $processor{$cur_proc}{'program'}{ $v3 } = $v1 + $v2;
