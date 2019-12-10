@@ -5,6 +5,7 @@ from pprint import pprint
 import numpy as np
 from itertools import permutations
 import csv
+from collections import deque
 
 # opcodes
 #
@@ -70,11 +71,10 @@ def run_intcode(cur_proc) :
             processor[cur_proc]['program'][ v3 ] = v1 * v2
 
         elif op == 3 :
-             processor[cur_proc]['program'][ v3 ] = processor[cur_proc]['io'][0]
-             processor[cur_proc]['io'] = np.delete(processor[cur_proc]['io'],[0])
+             processor[cur_proc]['program'][ v3 ] = processor[cur_proc]['io'].popleft()
 
         elif op == 4 :
-            processor[cur_proc]['io'] = np.append(processor[cur_proc]['io'],[v1])
+             processor[cur_proc]['io'].append(v1)
         
         elif op == 5 :
             if v1 > 0:
@@ -150,7 +150,8 @@ def main(input_file,mode):
             processor[cur_proc]['output']   = 0
             processor[cur_proc]['phase_set']   = 0
             processor[cur_proc]['program']   = {}
-            processor[cur_proc]['io'] = np.array([mode]);
+            processor[cur_proc]['io'] = deque()
+            processor[cur_proc]['io'].append(mode)
             processor[cur_proc]['relative_base']   = 0
 
             i = 0
