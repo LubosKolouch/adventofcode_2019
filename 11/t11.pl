@@ -31,6 +31,8 @@ sub get_input {
     my $qu      = $processor{$cur_proc}{'io'};
     my $g_value = $grid{ $processor{$cur_proc}{'x'} }{ $processor{$cur_proc}{'y'} } // 0;
     push @{ $processor{$cur_proc}{'io'} }, $g_value;
+
+    return 1;
 }
 
 sub process_output {
@@ -90,6 +92,8 @@ sub process_output {
             }
         }
     }
+
+    return 1;
 }
 
 sub run_intcode {
@@ -234,6 +238,8 @@ sub run_intcode {
         $pos += $shift;
 
     }
+
+    return 1;
 }
 
 # -------- MAIN ------------
@@ -284,7 +290,7 @@ sub main {
             $processor{$cur_proc}{'direction'}     = '^';
 
             my $i = 0;
-            for my $num ( split /,/, $program ) {
+            for my $num ( split /,/msx, $program ) {
                 $processor{$cur_proc}{'program'}{$i} = $num;
                 $i++;
             }
@@ -323,7 +329,8 @@ sub main {
         }
 
     }
-
+    
+    return 1;
 }
 
 $grid{50}{50} = 0;
