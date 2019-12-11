@@ -66,25 +66,31 @@ sub run_intcode {
 
     while (1) {
 
-
         my $instr = $processor{$cur_proc}{'program'}{$pos};
 
-        my $op = $instr % 100;
+        my $op    = $instr % 100;
         my $mode1 = int( $instr / 100 ) % 10;
         my $mode2 = int( $instr / 1000 ) % 10;
         my $mode3 = int( $instr / 10000 ) % 10;
 
-        my $reg1 = $processor{$cur_proc}{'program'}{$pos+1} // 0;
-        my $reg2 = $processor{$cur_proc}{'program'}{$pos+2} // 0;
-        my $reg3 =  $processor{$cur_proc}{'program'}{$pos+3} // 0;
+        my $reg1 = $processor{$cur_proc}{'program'}{ $pos + 1 } // 0;
+        my $reg2 = $processor{$cur_proc}{'program'}{ $pos + 2 } // 0;
+        my $reg3 = $processor{$cur_proc}{'program'}{ $pos + 3 } // 0;
 
         my $v1 = $reg1;
-        $v1 = $processor{$cur_proc}{'program'}{$reg1}            if $mode1 == 0;
-        $v1 = $processor{$cur_proc}{'program'}{ $reg1 + $processor{$cur_proc}{'relative_base'} } if $mode1 == 2;
+
+        if ( $op != 3 ) {
+            $v1 = $processor{$cur_proc}{'program'}{$reg1} if $mode1 == 0;
+            $v1 = $processor{$cur_proc}{'program'}{ $reg1 + $processor{$cur_proc}{'relative_base'} }
+              if $mode1 == 2;
+        } else {
+            $v1 += $processor{$cur_proc}{'relative_base'} if $mode1 == 2;
+        }
 
         my $v2 = $reg2;
-        $v2 = $processor{$cur_proc}{'program'}{$reg2}            if $mode2 == 0;
-        $v2 = $processor{$cur_proc}{'program'}{ $reg2 + $processor{$cur_proc}{'relative_base'} } if $mode2 == 2;
+        $v2 = $processor{$cur_proc}{'program'}{$reg2} if $mode2 == 0;
+        $v2 = $processor{$cur_proc}{'program'}{ $reg2 + $processor{$cur_proc}{'relative_base'} }
+          if $mode2 == 2;
 
         my $v3 = $reg3;
         $v3 += $processor{$cur_proc}{'relative_base'} if $mode3 == 2;
@@ -92,24 +98,25 @@ sub run_intcode {
         die unless defined $params{$op};
 
         $v1 = 0 unless defined $v1;
+
         #$v2 = 0 unless defined $v2;
 
         #        say "pos $pos mode1 $mode1 mode2 $mode2 mode3 $mode3  op $op v1 $v1 v2 $v2 v3 $v3";
 
         if ( $op == 1 ) {
-            $processor{$cur_proc}{'program'}{ $v3 } = $v1 + $v2;
+            $processor{$cur_proc}{'program'}{$v3} = $v1 + $v2;
         }
         elsif ( $op == 2 ) {
-            $processor{$cur_proc}{'program'}{ $v3 } = $v1 * $v2;
+            $processor{$cur_proc}{'program'}{$v3} = $v1 * $v2;
         }
         elsif ( $op == 3 ) {
-            $processor{$cur_proc}{'program'}{ $v3 } = shift @{$processor{$cur_proc}{'io'}};
+            $processor{$cur_proc}{'program'}{$v3} = shift @{ $processor{$cur_proc}{'io'} };
         }
         elsif ( $op == 4 ) {
-            push @{$processor{$cur_proc}{'io'}}, $v1;
+            push @{ $processor{$cur_proc}{'io'} }, $v1;
         }
         elsif ( $op == 5 ) {
-            if ( $v1 ) {
+            if ($v1) {
                 $pos = $v2;
                 next;
             }
@@ -122,20 +129,20 @@ sub run_intcode {
         }
         elsif ( $op == 7 ) {
             if ( $v1 < $v2 ) {
-                $processor{$cur_proc}{'program'}{ $v3 } = 1;
+                $processor{$cur_proc}{'program'}{$v3} = 1;
 
             }
             else {
-                $processor{$cur_proc}{'program'}{ $v3 } = 0;
+                $processor{$cur_proc}{'program'}{$v3} = 0;
             }
         }
         elsif ( $op == 8 ) {
 
             if ( $v1 == $v2 ) {
-                $processor{$cur_proc}{'program'}{ $v3 } = 1;
+                $processor{$cur_proc}{'program'}{$v3} = 1;
             }
             else {
-                $processor{$cur_proc}{'program'}{ $v3 } = 0;
+                $processor{$cur_proc}{'program'}{$v3} = 0;
             }
         }
         elsif ( $op == 9 ) {
@@ -143,7 +150,7 @@ sub run_intcode {
         }
 
         elsif ( $op == 99 ) {
-            return  ${$processor{$cur_proc}{'io'}}[-1];
+            return ${ $processor{$cur_proc}{'io'} }[-1];
         }
         else {
             die "Unknown argument found";
