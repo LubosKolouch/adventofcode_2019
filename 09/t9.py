@@ -51,15 +51,19 @@ def run_intcode(cur_proc) :
         reg3 = processor[cur_proc]['program'].get(pos+3,0)
 
         v1 = reg1
-        if mode1 == 0:  v1 = processor[cur_proc]['program'].get(reg1,0)
-        if mode1 == 2:  v1 = processor[cur_proc]['program'].get(reg1 + processor[cur_proc]['relative_base'],0)
+
+        if (op != 3) :
+            if mode1 == 0:  v1 = processor[cur_proc]['program'].get(reg1,0)
+            if mode1 == 2:  v1 = processor[cur_proc]['program'].get(reg1 + processor[cur_proc]['relative_base'],0)
+        else:
+            if mode1 == 2:  v1 += processor[cur_proc]['relative_base']
 
         v2 = reg2
         if mode2 == 0:  v2 = processor[cur_proc]['program'].get(reg2,0)
         if mode2 == 2:  v2 = processor[cur_proc]['program'].get(reg2 + processor[cur_proc]['relative_base'],0)
 
         v3 = reg3
-        if mode3 == 2:   v3 += processor[cur_proc]['relative_base']
+        if mode3 == 2:  v3 += processor[cur_proc]['relative_base']
 
         #$v1 = 0 unless defined $v1;
         #$v2 = 0 unless defined $v2;
@@ -71,7 +75,7 @@ def run_intcode(cur_proc) :
             processor[cur_proc]['program'][ v3 ] = v1 * v2
 
         elif op == 3 :
-             processor[cur_proc]['program'][ v3 ] = processor[cur_proc]['io'].popleft()
+            processor[cur_proc]['program'][ v1 ] = processor[cur_proc]['io'].popleft()
 
         elif op == 4 :
              processor[cur_proc]['io'].append(v1)
@@ -182,7 +186,13 @@ def main(input_file,mode):
 
                 if program_param['mode'] == 'normal' : end =1
 
-print(main('input1',1))
-print(main('input2',1))
+#print(main('input1',1))
+#print(main('input2',1))
+#print(main('input3',1))
+#print(main('input4',1))
+print(main('input5',1))
+print(main('input5',8))
+print(main('input5',11))
 print(main('input',1))
 print(main('input',2))
+
