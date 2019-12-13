@@ -22,16 +22,22 @@ from collections import deque
 processor = {}
 program_param = {}
 grid = {}
-painted = {}
 block_count = 0
 paddle_x = 0
 ball_x =0
 score =0
 
 def get_input(cur_proc) :
+    global block_count 
  #   qu = processor[cur_proc]['io']
   #  g_value = grid.get((processor[cur_proc]['x'],processor[cur_proc]['y']),0)
   #  processor[cur_proc]['io'].append(g_value)
+
+  # calculate black block count before processing first input
+    if block_count == 0:
+        for (a,b) in grid:
+            if grid[(a,b)] == 2 : block_count += 1
+
     if (paddle_x > ball_x) :
         processor[cur_proc]['io'].append(-1)
     elif (paddle_x < ball_x) :
@@ -42,6 +48,7 @@ def get_input(cur_proc) :
 def process_output(cur_proc) :
     global ball_x
     global paddle_x
+    global score
     qu = processor[cur_proc]['io']
     queue_length = len(qu)
     if (len(processor[cur_proc]['io']) == 3) :
@@ -51,16 +58,12 @@ def process_output(cur_proc) :
 
         if (x,y) == (-1,0):
             score = what
-            pprint("score")
-            pprint(score)
             return 1
         
         # paddle
         if what == 3:
             paddle_x = x
         elif what == 4:
-            pprint("ball x")
-            pprint(ball_x)
             ball_x = x
 
 
@@ -237,27 +240,13 @@ def main(input_file,mode):
 
 main('input',1)
 
-grid = {}
-painted = {}
-main('input',1)
-
-arr=np.zeros([100,100],dtype=str)
-
-block_count = 0
-for (a,b) in grid:
-     if (grid[(a,b)] == 1):
-        arr[a][b] =  '█'
-     elif grid[(a,b)] == 2 :
-        block_count += 1
-     else :
-        arr[a][b] = ' '
-
 pprint("block count")
 pprint(block_count)
 
-pprint(score)
-sys.exit()
+arr=np.zeros([100,100],dtype=str)
 
-arr = np.flip(arr,0)
-for row in arr: # Part 2
-        print(*row, sep='')
+pprint("score")
+pprint(score)
+
+#arr = np.flip(arr,0)
+
