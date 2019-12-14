@@ -25,6 +25,7 @@ use warnings;
 use 5.020;
 use Data::Dumper;
 use Text::Trim;
+use POSIX qw(ceil);
 
 my %bom;
 
@@ -85,14 +86,8 @@ sub produce {
 
         #say "not enough inventory, need to produce $still_needed";
 
-        my $prod_rounds = int( $still_needed / $bom{$elem}{'prod_qty'} );
 
-        if ( int( $still_needed / $bom{$elem}{'prod_qty'} ) * $bom{$elem}{'prod_qty'} == $still_needed ) {
-            $prod_rounds = int( $still_needed / $bom{$elem}{'prod_qty'} );
-        }
-        else {
-            $prod_rounds = int( $still_needed / $bom{$elem}{'prod_qty'} ) + 1;
-        }
+        my $prod_rounds = ceil( $still_needed / $bom{$elem}{'prod_qty'}  );
 
         #say "need $prod_rounds prod rounds, producing...";
         $inventory{$elem} += ( $prod_rounds * $bom{$elem}{'prod_qty'} ) - $still_needed;
