@@ -112,7 +112,6 @@ def process_output(cur_proc) :
         grid[(robot_x,robot_y)] = "O"       
         print("oxygen found at ",robot_x,robot_y)
         print(len(steps_q))
-        sys.exit()
 
     else: 
         #print("ok")
