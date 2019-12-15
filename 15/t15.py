@@ -6,7 +6,7 @@ import numpy as np
 from itertools import permutations
 import csv
 from collections import deque,defaultdict
-
+import networkx as nx
 
 # keep grid state in grid
 # x,y for robot
@@ -67,6 +67,8 @@ def get_input(cur_proc) :
             return 4
 
     #print("no uknown field found, backtracking")
+
+    if len(steps_q) == 0: return
     direction = steps_q.pop()
 
     if direction == 1:  robot_x -= 1
@@ -109,14 +111,13 @@ def process_output(cur_proc) :
         #print("robot_y",robot_y)
         #print(steps_q)
     elif response == 2:
-        grid[(robot_x,robot_y)] = "O"       
+        grid[(robot_x,robot_y)] = "."       
         print("oxygen found at ",robot_x,robot_y)
         print(len(steps_q))
 
     else: 
         #print("ok")
         grid[(robot_x,robot_y)] = "."
-
 
     return 1
 
@@ -290,6 +291,31 @@ def main(input_file,mode):
 
 main('input',1)
 
+# convert the grid to graph
+g = nx.DiGraph()
 
+max_path = 0
+
+for x, y in grid.keys() :
+    if grid.get((x,y)) == "#": continue
+
+    if grid.get((x-1,y),0) == '.' :
+        g.add_edge((x,y), (x-1,y))
+
+    if grid.get((x+1,y),0) == '.' :
+        g.add_edge((x,y), (x+1,y))
+
+    if grid.get((x,y-1),0) == '.' :
+        g.add_edge((x,y), (x,y-1))
+    
+    if grid.get((x,y+1),0) == '.' :
+        g.add_edge((x,y), (x,y+1))
+
+for x, y in grid.keys() :
+    if grid.get((x,y)) == "#": continue
+    path_l =  len(nx.dijkstra_path(g,(14,16),(x,y)))
+    if path_l > max_path :  max_path = path_l
+
+print(max_path-1)
 #arr = np.flip(arr,0)
 
