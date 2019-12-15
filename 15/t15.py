@@ -23,6 +23,8 @@ robot_x = 0
 robot_y =0
 score =0
 
+back_step_adj = { 1:(-1,0), 2:(1,0), 3:(0,1), 4:(0,-1) }
+
 def get_input(cur_proc) :
     global robot_x
     global robot_y
@@ -71,10 +73,9 @@ def get_input(cur_proc) :
     if len(steps_q) == 0: return
     direction = steps_q.pop()
 
-    if direction == 1:  robot_x -= 1
-    if direction == 2:  robot_x += 1
-    if direction == 3:  robot_y += 1
-    if direction == 4:  robot_y -= 1
+    robot_x += back_step_adj[direction][0]
+    robot_y += back_step_adj[direction][1]
+
     return direction
 
 
@@ -123,15 +124,6 @@ def process_output(cur_proc) :
 
 def run_intcode(cur_proc) :
 
-    # positions : 0 = position mode, 1 = immediate mode
-    # ABCDE
-    # 1002
-    #
-    #DE - two-digit opcode,      02 == opcode 2
-    # C - mode of 1st parameter,  0 == position mode
-    # B - mode of 2nd parameter,  1 == immediate mode
-    # A - mode of 3rd parameter,  0 == position mode, omitted due to being a leading zero
-
     params = { 1 : 3, 2 : 3, 3 : 1,    4 : 1,    5 : 2,    6 : 2,    7 : 3,    8 : 3, 9 : 1, 99:0 }
 
     pos = processor[cur_proc]['position']
@@ -164,14 +156,12 @@ def run_intcode(cur_proc) :
         v3 = reg3
         if mode3 == 2:  v3 += processor[cur_proc]['relative_base']
 
-        if op == 1 :
-            processor[cur_proc]['program'][ v3 ] = v1 + v2
+        if op == 1 : processor[cur_proc]['program'][ v3 ] = v1 + v2
 
-        elif op == 2 :
-            processor[cur_proc]['program'][ v3 ] = v1 * v2
+        # Process the opcodes
+        elif op == 2 : processor[cur_proc]['program'][ v3 ] = v1 * v2
 
         elif op == 3 :
-
             processor[cur_proc]['io'].append(get_input(cur_proc))
             processor[cur_proc]['program'][ v1 ] = processor[cur_proc]['io'].popleft()
 
@@ -179,15 +169,11 @@ def run_intcode(cur_proc) :
              processor[cur_proc]['io'].append(v1)
              process_output(cur_proc)
         
-        elif op == 5 :
-            if v1 > 0:
-                pos = v2;
-                continue
+        elif (op == 5) :
+            if v1 > 0: pos = v2; continue
         
         elif op == 6 :
-            if v1 == 0 :
-                pos = v2
-                continue
+            if v1 == 0 : pos = v2; continue
 
         elif op == 7 :
             if v1 < v2 :
@@ -299,17 +285,10 @@ max_path = 0
 for x, y in grid.keys() :
     if grid.get((x,y)) == "#": continue
 
-    if grid.get((x-1,y),0) == '.' :
-        g.add_edge((x,y), (x-1,y))
-
-    if grid.get((x+1,y),0) == '.' :
-        g.add_edge((x,y), (x+1,y))
-
-    if grid.get((x,y-1),0) == '.' :
-        g.add_edge((x,y), (x,y-1))
-    
-    if grid.get((x,y+1),0) == '.' :
-        g.add_edge((x,y), (x,y+1))
+    if grid.get((x-1,y),0) == '.' : g.add_edge((x,y), (x-1,y))
+    if grid.get((x+1,y),0) == '.' : g.add_edge((x,y), (x+1,y))
+    if grid.get((x,y-1),0) == '.' : g.add_edge((x,y), (x,y-1))
+    if grid.get((x,y+1),0) == '.' : g.add_edge((x,y), (x,y+1))
 
 for x, y in grid.keys() :
     if grid.get((x,y)) == "#": continue
