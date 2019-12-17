@@ -1,0 +1,15 @@
+1   2  3   4   5  6  7  8  9  A  B   C  D   E   F   G   H  I  J  K  L   M   N  O   P   Q  R  S  T  U   V  W   X
+R10 R8 L10 L10 R8 L6 L6 R8 L6 L6 R10 R8 L10 L10 L10 R10 L6 R8 L6 L6 L10 R10 L6 L10 R10 L6 R8 L6 L6 R10 R8 L10 L10 
+
+A => R10
+B => R8
+C => L10
+D => L6
+
+A B C C B D D B D D A B C C C A D B D D C A D C A D B D D A B C C 
+
+A B C C => X
+B D D => Y
+C A D => Z
+
+
