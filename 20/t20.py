@@ -113,7 +113,7 @@ print("Part 1:",len(nx.dijkstra_path(grid_part1,start,end))-1)
 
 grid_part2 = nx.Graph()
 
-max_levels = 30
+max_levels = 26
 
 for level in range(max_levels):
 
