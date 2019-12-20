@@ -118,8 +118,8 @@ max_levels = 30
 for level in range(max_levels):
 
     for fr,to in base_grid.edges() :
-        grid_part2.add_edge((fr[0],fr[1],level),(to[0],to[1],level))
+        grid_part2.add_edge((fr+(level,)),(to+(level,)))
 
     for port in outer_portals:
-        grid_part2.add_edge( (inner_portals[port][0], inner_portals[port][1], level), (outer_portals[port][0],outer_portals[port][1], level +1 ) )
-print("Part 2:",len(nx.dijkstra_path(grid_part2,(start[0],start[1],0),(end[0],end[1],0)))-1)
+        grid_part2.add_edge( (inner_portals[port] + (level,)), (outer_portals[port] + (level +1,) ) )
+print("Part 2:",len(nx.dijkstra_path(grid_part2,start,end))-1)
