@@ -25,24 +25,24 @@ def process_portal_row(row, offset):
     global end
 
     avoid_chars = [' ', '#', '.']
-    for myrow in range(len(data[row])):  # type: int
-        if grid.get((row, myrow)) in avoid_chars:
+    for col in range(len(data[row])):  # type: int
+        if grid.get((row, col)) in avoid_chars:
             continue
-        portal_name = grid[row, myrow] + grid[row + 1, myrow]
+        portal_name = grid[row, col] + grid[row + 1, col]
 
         if portal_name == 'AA':
-            start = (row + offset, myrow)
+            start = (row + offset, col)
             continue
 
         if portal_name == 'ZZ':
-            end = (row + offset, myrow)
+            end = (row + offset, col)
             continue
 
         if (row == 0) or (row == 119):
             # outer portals
-            outer_portals[portal_name] = (row + offset, myrow)
+            outer_portals[portal_name] = (row + offset, col)
         else:
-            inner_portals[portal_name] = (row + offset, myrow)
+            inner_portals[portal_name] = (row + offset, col)
 
 
 def process_portal_column(col, offset):
