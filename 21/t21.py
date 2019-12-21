@@ -43,7 +43,7 @@ code = open(sys.argv[1]).read().strip().split(',')
 data = list(map(int, code))
 
 print("Part 1:")
-print(get_result(["A ","B ","C ","D ","T ","J "],6))
+print(get_result(["A ","B ","C ","D ","T ","J "],5))
 
 print("Part 2:")
-print(get_result(["A ","B ","C ","D ","E", "F", "G", "H","I","T ","J "],8))
+print(get_result(["A ","B ","C ","D ","E", "F", "G", "H","I","T ","J "],7))
