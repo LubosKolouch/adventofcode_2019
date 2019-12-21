@@ -5,7 +5,7 @@ from IntCode import IntCode
 from itertools import combinations
 from collections import deque
 
-def get_result(source_register,start) :
+def get_result(source_register,start,final_instr) :
     instr_set = ["NOT ","AND ","OR "]
     target_register = ["T ","J "]
 
@@ -26,7 +26,7 @@ def get_result(source_register,start) :
                 for c in comb[j]:
                     tr = tr + list(map(ord, c))
                 tr[len(tr)-1] = 10
-            tr = tr + list(map(ord,"WALK\n"))
+            tr = tr + list(map(ord,final_instr+"\n"))
             #print(tr)
             processor = IntCode("A", data, tr)
             
@@ -43,7 +43,7 @@ code = open(sys.argv[1]).read().strip().split(',')
 data = list(map(int, code))
 
 print("Part 1:")
-print(get_result(["A ","B ","C ","D ","T ","J "],5))
+print(get_result(["A ","B ","C ","D ","T ","J "],5,"WALK"))
 
 print("Part 2:")
-print(get_result(["A ","B ","C ","D ","E", "F", "G", "H","I","T ","J "],7))
+print(get_result(["A ","B ","C ","D ","E", "F", "G", "H","I","T ","J "],7,"RUN"))
