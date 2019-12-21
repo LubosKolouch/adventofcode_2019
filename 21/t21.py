@@ -1,12 +1,8 @@
 #!python3
 
 import sys
-from pprint import pprint
-import numpy as np
 from itertools import permutations
-import csv
 from collections import deque, defaultdict
-import networkx as nx
 
 processor = {}
 program_param = {}
@@ -19,6 +15,12 @@ back_step_adj = {1: (-1, 0), 2: (1, 0), 3: (0, 1), 4: (0, -1)}
 
 
 def get_input(cur_proc):
+    """
+    Gets input for the IntCode VM
+    :param cur_proc: Which processor is now running
+    (to enable multiple codes running at the same time)
+    :return: the value of input
+    """
     instr = processor[cur_proc]['io'].popleft()
     return int(instr)
 
@@ -34,7 +36,8 @@ def process_output(cur_proc):
         robot_y += 1
         robot_x = 0
     else:
-        if chr(response) == "^": response = 35
+        if chr(response) == "^":
+            response = 35
         grid[(robot_x, robot_y)] = chr(response)
         robot_x += 1
 
@@ -49,11 +52,11 @@ def run_intcode(cur_proc):
     while 1:
         instr = processor[cur_proc]['program'][pos]
 
-        op = instr % 100;
+        op = instr % 100
 
-        mode1 = int(instr / 100) % 10;
-        mode2 = int(instr / 1000) % 10;
-        mode3 = int(instr / 10000) % 10;
+        mode1 = int(instr / 100) % 10
+        mode2 = int(instr / 1000) % 10
+        mode3 = int(instr / 10000) % 10
 
         reg1 = processor[cur_proc]['program'].get(pos + 1, 0)
         reg2 = processor[cur_proc]['program'].get(pos + 2, 0)
@@ -61,18 +64,26 @@ def run_intcode(cur_proc):
 
         v1 = reg1
 
-        if (op != 3):
-            if mode1 == 0:  v1 = processor[cur_proc]['program'].get(reg1, 0)
-            if mode1 == 2:  v1 = processor[cur_proc]['program'].get(reg1 + processor[cur_proc]['relative_base'], 0)
+        if op != 3:
+            if mode1 == 0:
+                v1 = processor[cur_proc]['program'].get(reg1, 0)
+            if mode1 == 2:
+                v1 = processor[cur_proc]['program'].get(
+                        reg1 + processor[cur_proc]['relative_base'], 0)
         else:
-            if mode1 == 2:  v1 += processor[cur_proc]['relative_base']
+            if mode1 == 2:
+                v1 += processor[cur_proc]['relative_base']
 
         v2 = reg2
-        if mode2 == 0:  v2 = processor[cur_proc]['program'].get(reg2, 0)
-        if mode2 == 2:  v2 = processor[cur_proc]['program'].get(reg2 + processor[cur_proc]['relative_base'], 0)
+        if mode2 == 0:
+            v2 = processor[cur_proc]['program'].get(reg2, 0)
+        if mode2 == 2:
+            v2 = processor[cur_proc]['program'].get(
+                    reg2 + processor[cur_proc]['relative_base'], 0)
 
         v3 = reg3
-        if mode3 == 2:  v3 += processor[cur_proc]['relative_base']
+        if mode3 == 2:
+            v3 += processor[cur_proc]['relative_base']
 
         if op == 1:
             processor[cur_proc]['program'][v3] = v1 + v2
@@ -82,8 +93,6 @@ def run_intcode(cur_proc):
             processor[cur_proc]['program'][v3] = v1 * v2
 
         elif op == 3:
-            #           processor[cur_proc]['io'].append(get_input(cur_proc))
-            #            processor[cur_proc]['program'][ v1 ] = processor[cur_proc]['io'].popleft()
             processor[cur_proc]['program'][v1] = get_input(cur_proc)
 
         elif op == 4:
@@ -91,10 +100,14 @@ def run_intcode(cur_proc):
         #     process_output(cur_proc)
 
         elif (op == 5):
-            if v1 > 0: pos = v2; continue
+            if v1 > 0:
+                pos = v2
+                continue
 
         elif op == 6:
-            if v1 == 0: pos = v2; continue
+            if v1 == 0:
+                pos = v2
+                continue
 
         elif op == 7:
             if int(v1) < int(v2):
@@ -109,7 +122,7 @@ def run_intcode(cur_proc):
                 processor[cur_proc]['program'][v3] = 0
 
         elif op == 9:
-            processor[cur_proc]['relative_base'] += v1;
+            processor[cur_proc]['relative_base'] += v1
 
         elif op == 99:
             return processor[cur_proc]['io']
@@ -117,15 +130,15 @@ def run_intcode(cur_proc):
         else:
             sys.exit("Unknown argument found")
 
-        shift = params[op] + 1;
-        pos = pos + shift;
+        shift = params[op] + 1
+        pos = pos + shift
 
 
 # ------- MAIN ----------
 
 def run_program(data, mode, inp=[]):
-    program_param['mode'] = 'normal';
-    program_param['program_end'] = 0;
+    program_param['mode'] = 'normal'
+    program_param['program_end'] = 0
 
     phase_list = ''
     if program_param['mode'] == 'normal':
@@ -134,10 +147,8 @@ def run_program(data, mode, inp=[]):
     if program_param['mode'] == 'feedback':
         phase_list = '56789'
 
-    max = 0
-
     for combo in permutations(phase_list, len(phase_list)):
-        program_param['program_end'] = 0;
+        program_param['program_end'] = 0
 
         amp = ['A']
 
@@ -174,16 +185,15 @@ def run_program(data, mode, inp=[]):
 
                 processor[next_proc]['input'] = run_intcode(cur_proc)
 
-                #                if (cur_proc == 'A') and (processor[next_amp,'input'] > max) :
-                #                   max = processor[next_amp,'input']
-
-                if (procs == len(proc) - 1): return processor[next_proc]['input']
+                if (procs == len(proc) - 1):
+                    return processor[next_proc]['input']
 
                 if (program_param['program_end'] == 1):
-                    end = 1;
+                    end = 1
                     break
 
-                if program_param['mode'] == 'normal': end = 1
+                if program_param['mode'] == 'normal':
+                    end = 1
 
 
 # -------------- START -------------
