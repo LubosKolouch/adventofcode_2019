@@ -17,7 +17,7 @@ class IntCode(object):
         self.relative_base = 0
         self.x = 50
         self.y = 50
-        self.direction = '^'
+        self.__direction = '^'
 
         i = 0
         for instr in code:
