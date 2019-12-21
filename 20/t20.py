@@ -11,7 +11,7 @@ inner_portals = defaultdict(str)  # type: str
 outer_portals = defaultdict(str)  # type: str
 
 start = end = None
-
+avoid_chars = [' ', '#', '.']
 
 def process_portal_row(row, offset):
     """
@@ -24,7 +24,6 @@ def process_portal_row(row, offset):
     global start
     global end
 
-    avoid_chars = [' ', '#', '.']
     for col in range(len(data[row])):  # type: int
         if grid.get((row, col)) in avoid_chars:
             continue
@@ -49,7 +48,6 @@ def process_portal_column(col, offset):
     global outer_portals
     global inner_portals
 
-    avoid_chars = [' ', '#', '.']
     for i in range(len(data)):  # type: int
         if grid.get((i, col)) in avoid_chars:
             continue
