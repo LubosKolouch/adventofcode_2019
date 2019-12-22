@@ -47,3 +47,19 @@ for instr in code:
         deck = deal_to_new_stack(deck)
 
 print(np.where(deck == 2019)[0])
+
+cards = 119315717514047
+deck = np.arange(cards)
+
+for r in range(101741582076661) :
+    for instr in code:
+        instr_arr = instr.split(' ')
+    if instr_arr[0] == 'cut':
+        deck = cut(deck,int(instr_arr[1]))
+    elif instr_arr[0] == 'deal' and instr_arr[1] == 'with' :
+        deck = deal_with_increment(deck,int(instr_arr[3]))
+    else:
+        deck = deal_to_new_stack(deck)
+
+print(np.where(deck == 2020)[0])
+
