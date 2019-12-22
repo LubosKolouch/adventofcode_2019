@@ -46,4 +46,4 @@ print("Part 1:")
 print(get_result(["A ","B ","C ","D ","T ","J "],5,"WALK"))
 
 print("Part 2:")
-print(get_result(["A ","B ","C ","D ","E", "F", "G", "H","I","T ","J "],7,"RUN"))
+print(get_result(["C ","H ","B ","T ","A ", "D ", "G ", "E ","I ","F ","J "],7,"RUN"))
