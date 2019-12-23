@@ -2,8 +2,8 @@
 
 import sys
 from IntCode import IntCode
-from itertools import combinations
 from collections import deque
+
 
 def is_network_idle():
     for i in range(50):
@@ -20,8 +20,8 @@ data = list(map(int, code))
 processors = deque()
 
 for i in range(50):
-    processor = IntCode(i,data,i)
-    processors.append( processor )
+    processor = IntCode(i, data, i)
+    processors.append(processor)
 
 i = 0
 addr = 0
@@ -32,9 +32,7 @@ part = 1
 empty_count = 0
 
 while 1:
-#    print("Running processor :",i)
-    (addr,x,y) = processors[i].run_intcode()
-
+    (addr, x, y) = processors[i].run_intcode()
 
     if addr != -1 and addr != 255:
         processors[addr].io.append(x)
@@ -42,21 +40,20 @@ while 1:
         empty_count = 0
         i = addr
 
-
     elif addr == 255:
         if part == 1:
-            print("Part1 : ",y)
+            print("Part1 : ", y)
             part += 1
 
         natx = x
         naty = y
-        empty_count =0 
+        empty_count = 0
 
-    else :
+    else:
         if is_network_idle() == 1:
             if empty_count == 10000:
-                if prev_naty and  naty == prev_naty:
-                    print("Part2 : ",naty)
+                if prev_naty and naty == prev_naty:
+                    print("Part2 : ", naty)
                     break
 
                 prev_naty = naty
@@ -68,4 +65,3 @@ while 1:
                 empty_count += 1
         i += 1
         i %= 50
-
