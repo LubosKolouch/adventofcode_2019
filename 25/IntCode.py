@@ -41,18 +41,18 @@ class IntCode(object):
 
         if len(self.manualio) > 0:
             instr = self.manualio.popleft()
-            print(chr(instr),end='')
-            #if instr == 10:
-            #    input("Press enter") 
+            print(chr(instr), end='')
+            # if instr == 10:
+            #    input("Press enter")
             return instr
         else:
             if len(self.io) == 0:
                 inp = input("Input?:")
-                inputs=list(map(ord, inp+'\n'))
+                inputs = list(map(ord, inp+'\n'))
 
                 for i in inputs:
                     self.io.append(i)
-            
+
             instr = self.io.popleft()
 
         self.last_output = ''
@@ -62,7 +62,7 @@ class IntCode(object):
         # if we have seen all address,
         # x, y, return it and delete from the queue
         what = self.io.popleft()
-        print(chr(int(what)),end='')
+        print(chr(int(what)), end='')
         self.last_output += chr(int(what))
         return 1
 
